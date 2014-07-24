@@ -15,7 +15,8 @@ insight.ColumnSeries = function ColumnSeries(name, data, x, y, color) {
         stacked = d3.functor(false),
         seriesName = "",
         seriesFunctions = {},
-        barWidthFunction = this.x.rangeType;
+        barWidthFunction = this.x.rangeType,
+        selectedItems = [];
 
     this.classValues = [insight.Constants.BarClass];
 

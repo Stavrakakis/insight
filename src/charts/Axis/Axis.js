@@ -14,21 +14,21 @@ insight.Axis = function Axis(name, scale) {
     this.direction = '';
     this.gridlines = new insight.AxisGridlines(this);
 
-    var self = this,
-        label = name,
-        ordered = d3.functor(false),
-        orderingFunction = null,
-        tickSize = d3.functor(1),
-        tickPadding = d3.functor(10),
-        labelRotation = '0',
-        tickOrientation = d3.functor('lr'),
-        showGridLines = false,
-        colorFunction = d3.functor('#777'),
-        display = true,
-        barPadding = d3.functor(0.1),
-        initialisedAxisView = false,
-        reversedPosition = false,
-        zoomable = false;
+    var self = this;
+    var label = name;
+    var ordered = d3.functor(false);
+    var orderingFunction = null;
+    var tickSize = d3.functor(1);
+    var tickPadding = d3.functor(10);
+    var labelRotation = '90';
+    var tickOrientation = d3.functor('lr');
+    var showGridLines = false;
+    var colorFunction = d3.functor('#777');
+    var display = true;
+    var barPadding = d3.functor(0.1);
+    var initialisedAxisView = false;
+    var reversedPosition = false;
+    var zoomable = false;
 
     var orientation = function() {
         if (self.horizontal()) {
@@ -83,7 +83,7 @@ insight.Axis = function Axis(name, scale) {
 
     /**
      * For an ordinal/categorical axis, this method queries all series that use this axis to get the list of available values
-     * @memberof insight.Axis
+     * TODO - currently just checks the first as I've not had a scenario where different series on the same axis had different ordinal keys.
      * @returns {object[]} values - the values for this ordinal axis
      */
     var findOrdinalValues = function() {
@@ -100,7 +100,6 @@ insight.Axis = function Axis(name, scale) {
 
     /**
      * For linear series, this method is used to calculate the maximum value to be used in this axis.
-     * @memberof insight.Axis
      * @returns {Date} max - The largest value in the datasets that use this axis
      */
     var findMax = function() {
@@ -118,7 +117,6 @@ insight.Axis = function Axis(name, scale) {
 
     /**
      * For time series, this method is used to calculate the minimum value to be used in this axis.
-     * @memberof insight.Axis
      * @returns {Date} minTime - The smallest time in the datasets that use this axis
      */
     var minTime = function() {
@@ -224,32 +222,12 @@ insight.Axis = function Axis(name, scale) {
     };
 
 
-    /**
-     * This getter/setter defines whether or not the axis is initialized with zoom functionality by a chart
-     * @memberof insight.Axis
-     * @returns {boolean}
-     */
-    /**
-     * @memberof insight.Axis
-     * @param {boolean} value - When used as a setter, this function takes a boolean value that will define whether this axis is zoomable
-     * @returns {this}
-     */
-    this.zoomable = function(value) {
-        if (!arguments.length) {
-            return zoomable;
-        }
-        zoomable = value;
-
-        return this;
-    };
 
     /**
      * This getter/setter defines whether or not the axis should be drawn on the chart (lines and labels)
-     * @memberof insight.Axis
      * @returns {function}
      */
     /**
-     * @memberof insight.Axis
      * @param {boolean} value - When used as a setter, this function takes a boolean value that will define whether this axis will be drawn
      * @returns {this}
      */
@@ -290,11 +268,9 @@ insight.Axis = function Axis(name, scale) {
 
     /**
      * This getter/setter defines the color used by the axis labels and lines
-     * @memberof insight.Axis
      * @returns {function}
      */
     /**
-     * @memberof insight.Axis
      * @param {object} color - When used as a setter, this function can take a string color (hex, named or "rgb(r,g,b)") or a function that returns the color of the axis.
      * @returns {this}
      */
@@ -324,7 +300,13 @@ insight.Axis = function Axis(name, scale) {
         return this;
     };
 
-
+    this.zoomable = function(value) {
+        if (!arguments.length) {
+            return zoomable;
+        }
+        zoomable = value;
+        return this;
+    };
 
     this.tickSize = function(value) {
         if (!arguments.length) {
@@ -359,12 +341,6 @@ insight.Axis = function Axis(name, scale) {
             return tickOrientation();
         }
 
-        if (value === 'tb') {
-            labelRotation = '90';
-        } else if (value === 'lr') {
-            labelRotation = '0';
-        }
-
         tickOrientation = d3.functor(value);
 
         return this;
@@ -381,7 +357,7 @@ insight.Axis = function Axis(name, scale) {
         var offset = self.tickPadding() + (self.tickSize() * 2);
         offset = (reversedPosition && self.vertical()) ? 0 - offset : offset;
 
-        var rotation = ' rotate(' + self.tickRotation() + ',0,' + offset + ')';
+        var rotation = this.tickOrientation() == 'tb' ? ' rotate(' + self.tickRotation() + ',0,' + offset + ')' : '';
 
         return rotation;
     };
@@ -427,11 +403,9 @@ insight.Axis = function Axis(name, scale) {
 
     /**
      * This getter/setter defines whether gridlines are displayed for the axis.
-     * @memberof insight.Axis
      * @returns {function}
      */
     /**
-     * @memberof insight.Axis
      * @param {object} showLines - When used as a setter, this function can take a boolean of whether to display the gridlines (true) or hide them (false).
      * @returns {this}
      */
@@ -446,7 +420,6 @@ insight.Axis = function Axis(name, scale) {
 
     this.initializeScale = function() {
         applyScaleRange.call(this.scale.domain(this.domain()), this.rangeType);
-
     };
 
 
@@ -488,8 +461,6 @@ insight.Axis = function Axis(name, scale) {
 
     this.draw = function(chart, dragging) {
 
-        // Scale range and bounds need to be initialized regardless of whether the axis will be displayed
-
         this.calculateAxisBounds(chart);
 
         if (!this.zoomable()) {
@@ -499,6 +470,8 @@ insight.Axis = function Axis(name, scale) {
         if (!this.display()) {
             return;
         }
+
+        //Update bounds
 
         this.setupAxisView(chart);
 

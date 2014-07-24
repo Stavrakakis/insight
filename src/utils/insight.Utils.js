@@ -15,24 +15,33 @@ insight.Utils = (function() {
      * @param {object} a - Description
      * @param {object} b - Description
      * @param {object[]} sorters - A list of sorting rules [{sortFunction: function(a){return a.valueToSortOn;}, order: 'ASC'}]
+     * @param {int} index - the current depth of the sort. i.e. which function in the order of sorting priorities is currently being evaluated.
      */
-    var recursiveSort = function(a, b, sorters) {
-        if (sorters.length === 0)
+    var recursiveSort = function(a, b, sorters, index) {
+
+        if (index == sorters.length - 1) {
             return 0;
-
-        var current = sorters[0];
-        var sortParameter = current.sortParameter;
-        var sortOrder = current.order;
-
-        var aResult = sortParameter(a),
-            bResult = sortParameter(b);
-
-        if (aResult == bResult) {
-            return recursiveSort(a, b, sorters.slice(1));
         }
 
-        var sortResult = (aResult > bResult) ? 1 : -1;
-        return (sortOrder == 'ASC') ? sortResult : -sortResult;
+        var current = sorters[index];
+        var sortFunction = current.sortFunction;
+        var sortOrder = current.order;
+        var sortResult = null;
+
+        var aResult = sortFunction(a),
+            bResult = sortFunction(b);
+
+        if (aResult > bResult) {
+            sortResult = 1;
+        } else if (aResult < bResult) {
+            sortResult = -1;
+        } else if ((aResult == bResult)) {
+            sortResult = recursiveSort(a, b, sorters, index + 1);
+        }
+
+        sortResult = sortOrder == 'ASC' ? sortOrder : -sortOrder;
+
+        return sortResult;
     };
 
 
@@ -183,13 +192,6 @@ insight.Utils = (function() {
     exports.safeString = function(input) {
         return input.split(' ')
             .join('_');
-    };
-
-    exports.valueForKey = function(dictionary, key, keyFunction, valueFunction) {
-        var values = dictionary.filter(function(item) {
-            return keyFunction(item) == key;
-        });
-        return valueFunction(values[0]);
     };
 
     return exports;

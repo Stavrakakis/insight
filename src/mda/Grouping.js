@@ -37,16 +37,21 @@ insight.Grouping = (function(insight) {
             group.Count++;
 
             // Increment the sum of any properties
+            var propertyName;
 
-            propertiesToSum.map(function(propertyName) {
+            for (var index in propertiesToSum) {
+                propertyName = propertiesToSum[index];
+
                 if (data.hasOwnProperty(propertyName)) {
                     group[propertyName].Sum += data[propertyName];
                 }
-            });
+            }
 
             // Increment the counts of the different occurences of any properties defined. E.g: if a property 'Country' can take multiple string values, 
             // this counts the occurences of each distinct value the property takes
-            propertiesToCount.map(function(propertyName) {
+            for (index in propertiesToCount) {
+
+                propertyName = propertiesToCount[index];
 
                 var groupProperty = group[propertyName];
 
@@ -68,7 +73,7 @@ insight.Grouping = (function(insight) {
                         group[propertyName].Total++;
                     }
                 }
-            });
+            }
 
 
             return group;
@@ -84,13 +89,21 @@ insight.Grouping = (function(insight) {
 
             group.Count--;
 
-            propertiesToSum.map(function(propertyName) {
+            var propertyName;
+
+            for (var index in propertiesToSum) {
+
+                propertyName = propertiesToSum[index];
+
                 if (data.hasOwnProperty(propertyName)) {
                     group[propertyName].Sum -= data[propertyName];
                 }
-            });
+            }
 
-            propertiesToCount.map(function(propertyName) {
+            for (index in propertiesToCount) {
+
+                propertyName = propertiesToCount[index];
+
                 if (data.hasOwnProperty(propertyName)) {
 
                     var propertyValue = data[propertyName];
@@ -108,7 +121,7 @@ insight.Grouping = (function(insight) {
                         group[propertyName].Total--;
                     }
                 }
-            });
+            }
 
             return group;
         };
@@ -119,23 +132,22 @@ insight.Grouping = (function(insight) {
          */
         var reduceInitializeGroup = function() {
             var group = {
-                Count: 0
-            };
+                    Count: 0
+                },
+                propertyName;
 
-            propertiesToSum.map(function(propertyName) {
+
+            for (var index in propertiesToSum) {
+                propertyName = propertiesToSum[index];
                 group[propertyName] = group[propertyName] ? group[propertyName] : {};
                 group[propertyName].Sum = 0;
-            });
+            }
 
-            propertiesToAverage.map(function(propertyName) {
-                group[propertyName] = group[propertyName] ? group[propertyName] : {};
-                group[propertyName].Average = 0;
-            });
-
-            propertiesToCount.map(function(propertyName) {
+            for (index in propertiesToCount) {
+                propertyName = propertiesToCount[index];
                 group[propertyName] = group[propertyName] ? group[propertyName] : {};
                 group[propertyName].Total = 0;
-            });
+            }
 
             return group;
         };

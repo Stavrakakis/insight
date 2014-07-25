@@ -2,6 +2,24 @@
  * Created by tkelly on 01/07/2014.
  */
 
+var seriesData = 
+    [
+        {
+            key: 'A',
+            value: 20
+        },
+        {
+            key: 'B',
+            value: 14
+        },
+        {
+            key: 'C',
+            value: 10
+        }
+    ];
+
+
+
 describe("Series Tests", function(){
 
     var chart;

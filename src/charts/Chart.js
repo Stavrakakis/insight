@@ -37,14 +37,10 @@
             var yAxes = [];
             var self = this;
             var title = '';
-            var autoMargin = false;
+            var autoMargin = true;
 
 
             this.init = function(create, container) {
-
-                if (autoMargin) {
-                    self.calculateLabelMargin();
-                }
 
                 self.container = create ? d3.select(container)
                     .append('div') : d3.select(self.element)
@@ -79,7 +75,6 @@
                 var axes = xAxes.concat(yAxes);
 
                 axes.map(function(axis) {
-
                     axis.draw(self, dragging);
                 });
 
@@ -109,12 +104,19 @@
 
 
             this.resizeChart = function() {
+                if (autoMargin) {
+                    self.calculateLabelMargin();
+                }
+
                 var chartMargin = self.margin();
+
+                var context = self.measureCanvas.getContext('2d');
+                context.font = "15pt Open Sans Bold";
 
                 self.container.style('width', self.width() + 'px');
 
                 self.chartSVG
-                    .attr('width', (self.width() + 100))
+                    .attr('width', self.width())
                     .attr('height', self.height());
 
                 self.plotArea = this.plotArea
@@ -128,18 +130,6 @@
                     .attr('height', self.height() - chartMargin.top - chartMargin.bottom);
             };
 
-
-
-            this.recalculateScales = function() {
-                scales.map(function(scale) {
-                    // don't resize the scale that is being dragged/zoomed, it is done automatically by d3
-                    var notZoomScale = zoomAxis != scale;
-
-                    if (notZoomScale) {
-                        scale.initialize();
-                    }
-                });
-            };
 
             this.zoomable = function(scale) {
                 zoomable = true;
@@ -155,7 +145,8 @@
                 this.zoom.x(zoomAxis.scale);
 
                 if (!this.zoomExists()) {
-                    this.plotArea.append('rect')
+                    //Draw ourselves as the first element in the plot area
+                    this.plotArea.insert('rect', ':first-child')
                         .attr('class', 'zoompane')
                         .attr('width', this.width())
                         .attr('height', this.height() - this.margin()
@@ -182,7 +173,10 @@
                 if (!arguments.length) {
                     return this._margin;
                 }
+
+                autoMargin = false;
                 this._margin = _;
+
                 return this;
             };
 
@@ -350,10 +344,13 @@
 
             this.series()
                 .forEach(function(series) {
+                    var xAxis = series.x;
+                    var yAxis = series.y;
+
                     var labelDimensions = series.maxLabelDimensions(canvas);
 
-                    margin[series.x.orientation()] = Math.max(labelDimensions.maxKeyWidth, margin[series.x.orientation()]);
-                    margin[series.y.orientation()] = Math.max(labelDimensions.maxValueWidth, margin[series.y.orientation()]);
+                    margin[xAxis.orientation()] = Math.max(labelDimensions.maxKeyHeight, margin[xAxis.orientation()]);
+                    margin[yAxis.orientation()] = Math.max(labelDimensions.maxValueWidth, margin[yAxis.orientation()]);
                 });
 
             this.margin(margin);

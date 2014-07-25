@@ -483,16 +483,16 @@ insight.Grouping = (function(insight) {
          */
         this.postAggregationCalculations = function() {
 
-            var cumulativeTotals = {};
-            var totals = {};
+            var cumulativeTotals = {},
+                totals = {},
+                i;
 
             var data = self.ordered() ? self.getData(this.orderFunction()) : self.getData();
 
-            data.forEach(function(d) {
-
-                self.calculateAverages(d);
-                self.calculateCumulativeValues(d, cumulativeTotals);
-            });
+            for (i in data) {
+                self.calculateAverages(data[i]);
+                self.calculateCumulativeValues(data[i], cumulativeTotals);
+            }
 
             self.calculateTotals();
         };
@@ -514,19 +514,20 @@ insight.Grouping = (function(insight) {
          */
         this.calculateCumulativeValues = function(d, cumulativeTotals) {
 
-            var propertiesToAccumulate = this.cumulative();
+            var propertiesToAccumulate = this.cumulative(),
+                propertyName;
 
-            propertiesToAccumulate.map(function(propertyName) {
+            for (var index in propertiesToAccumulate) {
+
+                propertyName = propertiesToAccumulate[index];
 
                 var resolvedProperty = self.getDescendant(d.value, propertyName);
-
                 var totalName = resolvedProperty.propertyName + 'Cumulative';
 
                 cumulativeTotals[totalName] = cumulativeTotals[totalName] ? cumulativeTotals[totalName] + resolvedProperty.value : resolvedProperty.value;
-
                 resolvedProperty.container[totalName] = cumulativeTotals[totalName];
 
-            });
+            }
 
             return cumulativeTotals;
         };

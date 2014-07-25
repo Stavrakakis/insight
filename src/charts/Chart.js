@@ -13,31 +13,28 @@
             this.name = name;
             this.element = element;
             this.selectedItems = [];
-            var legend = null;
-
-            var zoomAxis = null;
             this.container = null;
             this.chart = null;
             this.measureCanvas = document.createElement('canvas');
-
-            this._margin = {
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0
-            };
-
             this.legendView = null;
 
-            var height = d3.functor(300);
-            var width = d3.functor(300);
-            var zoomable = false;
-            var series = [];
-            var xAxes = [];
-            var yAxes = [];
-            var self = this;
-            var title = '';
-            var autoMargin = true;
+            var height = d3.functor(300),
+                width = d3.functor(300),
+                zoomable = false,
+                series = [],
+                xAxes = [],
+                yAxes = [],
+                legend = null,
+                zoomAxis = null,
+                self = this,
+                title = '',
+                autoMargin = true,
+                margin = {
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0
+                };
 
 
             this.init = function(create, container) {
@@ -171,11 +168,11 @@
 
             this.margin = function(_) {
                 if (!arguments.length) {
-                    return this._margin;
+                    return margin;
                 }
 
                 autoMargin = false;
-                this._margin = _;
+                margin = _;
 
                 return this;
             };

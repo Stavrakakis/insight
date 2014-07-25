@@ -490,21 +490,36 @@ insight.Grouping = (function(insight) {
             var data = self.ordered() ? self.getData(this.orderFunction()) : self.getData();
 
             for (i in data) {
-                self.calculateAverages(data[i]);
-                self.calculateCumulativeValues(data[i], cumulativeTotals);
+
+                var group = data[i];
+
+                self.calculateAverages(group);
+                self.calculateCumulativeValues(group, cumulativeTotals);
             }
 
-            self.calculateTotals();
+            // Call any user defined post aggregation calculations
+            self.postAggregation(self);
         };
 
-        this.calculateTotals = function() {
 
-            var propertiesToTotal = self.total();
+        this.calculateTotals = function(d) {
 
-            propertiesToTotal.map(function(propertyName) {
+            var propertiesToTotal = this.total(),
+                propertyName,
+                objectToAdd,
+                newPropertyName,
+                index;
 
+            for (index in propertiesToTotal) {
 
-            });
+                propertyName = propertiesToTotal[index];
+
+                objectToAdd = self.getDescendant(d.value, propertyName);
+                newPropertyName = objectToAdd.propertyName + 'Total';
+
+                // increment the total value, or initialize if it doesn't exist yet.
+                //d[newPropertyName] = d[newPropertyName] ? d[newPropertyName] + objectToAdd.value : objectToAdd.value;
+            }
         };
 
         /**
@@ -515,21 +530,29 @@ insight.Grouping = (function(insight) {
         this.calculateCumulativeValues = function(d, cumulativeTotals) {
 
             var propertiesToAccumulate = this.cumulative(),
-                propertyName;
+                propertyName,
+                objectToAdd,
+                newPropertyName,
+                index;
 
-            for (var index in propertiesToAccumulate) {
+            for (index in propertiesToAccumulate) {
 
                 propertyName = propertiesToAccumulate[index];
 
-                var resolvedProperty = self.getDescendant(d.value, propertyName);
-                var totalName = resolvedProperty.propertyName + 'Cumulative';
+                objectToAdd = self.getDescendant(d.value, propertyName);
+                newPropertyName = objectToAdd.propertyName + 'Cumulative';
 
-                cumulativeTotals[totalName] = cumulativeTotals[totalName] ? cumulativeTotals[totalName] + resolvedProperty.value : resolvedProperty.value;
-                resolvedProperty.container[totalName] = cumulativeTotals[totalName];
-
+                // increment the cumulative value, or initialize if it doesn't exist yet.
+                cumulativeTotals[newPropertyName] = cumulativeTotals[newPropertyName] ? cumulativeTotals[newPropertyName] + objectToAdd.value : objectToAdd.value;
+                objectToAdd.container[newPropertyName] = cumulativeTotals[newPropertyName];
             }
 
             return cumulativeTotals;
+        };
+
+
+        this.postAggregation = function(grouping) {
+
         };
 
         return this;

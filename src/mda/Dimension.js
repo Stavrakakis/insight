@@ -9,15 +9,15 @@ insight.Dimension = (function(insight) {
      * @param {function} dimension - The function used to categorize points within the dimension.
      * @param {dimension} dimension - The crossfilter dimension representing this dimension (TODO: create this inside the constructor - should be invisible)
      * @param {function} dimension - The function used to generate a displayable string for this dimension, to be used as a label or otherwise (TODO: is this the business of this constructor or even object?)
-     * @param {boolean} multi - Whether or not this dimension represents a collection of possible values in each item.
+     * @param {boolean} oneToMany - Whether or not this dimension represents a collection of possible values in each item.
      * @class
      */
-    var Dimension = function Dimension(name, func, dimension, displayFunction, multi) {
+    var Dimension = function Dimension(name, func, dimension, displayFunction, oneToMany) {
         this.Dimension = dimension;
         this.Name = name;
         this.Filters = [];
         this.Function = func;
-        this.multiple = multi;
+        this.oneToMany = oneToMany;
 
         this.displayFunction = displayFunction ? displayFunction : function(d) {
             return d;

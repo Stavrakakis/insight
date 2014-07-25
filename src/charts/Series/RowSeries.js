@@ -228,7 +228,7 @@ insight.RowSeries = function RowSeries(name, data, x, y, color) {
         };
 
         var duration = function(d, i) {
-            return 200 + (i * 20);
+            return 400 + (i * 50);
         };
 
         for (var seriesIndex in this.series) {

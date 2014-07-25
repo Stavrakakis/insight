@@ -10,10 +10,11 @@ insight.Grouping = (function(insight) {
 
         this.dimension = dimension;
 
-        var sumProperties = [],
-            countProperties = [],
-            cumulativeProperties = [],
-            averageProperties = [],
+        var propertiesToSum = [],
+            propertiesToCount = [],
+            propertiesToAccumulate = [],
+            propertiesToAverage = [],
+            totalProperties = [],
             ordered = false,
             self = this,
             filterFunction = null;
@@ -41,9 +42,9 @@ insight.Grouping = (function(insight) {
          */
         this.sum = function(_) {
             if (!arguments.length) {
-                return sumProperties;
+                return propertiesToSum;
             }
-            sumProperties = _;
+            propertiesToSum = _;
             return this;
         };
 
@@ -57,9 +58,9 @@ insight.Grouping = (function(insight) {
          */
         this.cumulative = function(_) {
             if (!arguments.length) {
-                return cumulativeProperties;
+                return propertiesToAccumulate;
             }
-            cumulativeProperties = _;
+            propertiesToAccumulate = _;
             return this;
         };
 
@@ -74,9 +75,26 @@ insight.Grouping = (function(insight) {
          */
         this.count = function(_) {
             if (!arguments.length) {
-                return countProperties;
+                return propertiesToCount;
             }
-            countProperties = _;
+            propertiesToCount = _;
+            return this;
+        };
+
+        /**
+         * The total function gets or sets the properties whose value occurences will be totalled across this dimension.
+         * If the provided property contains an array of values, each distinct value in that array will be summed across all dimensions.
+         * @returns {String[]}
+         */
+        /**
+         * @param {String[]} properties - An array of property names that will have their occuring values totalled across all dimensions during aggregation
+         * @returns {this}
+         */
+        this.total = function(_) {
+            if (!arguments.length) {
+                return totalProperties;
+            }
+            totalProperties = _;
             return this;
         };
 
@@ -90,11 +108,11 @@ insight.Grouping = (function(insight) {
          */
         this.mean = function(_) {
             if (!arguments.length) {
-                return averageProperties;
+                return propertiesToAverage;
             }
-            averageProperties = _;
+            propertiesToAverage = _;
 
-            sumProperties = insight.Utils.arrayUnique(sumProperties.concat(averageProperties));
+            propertiesToSum = insight.Utils.arrayUnique(propertiesToSum.concat(propertiesToAverage));
 
             return this;
         };
@@ -241,7 +259,7 @@ insight.Grouping = (function(insight) {
 
             var data = [];
 
-            if (self.dimension.multiple) {
+            if (self.dimension.oneToMany) {
                 data = self.reduceMultiDimension();
             } else {
                 data = self.dimension.Dimension.group()
@@ -350,7 +368,7 @@ insight.Grouping = (function(insight) {
                 self.initialize();
             }
 
-            if (this.dimension.multiple) {
+            if (this.dimension.oneToMany) {
                 data = self.data.value()
                     .values;
             } else {
@@ -412,6 +430,7 @@ insight.Grouping = (function(insight) {
          */
         this.postAggregationCalculations = function() {
 
+            var cumulativeTotals = {};
             var totals = {};
 
             var data = self.ordered() ? self.getData(this.orderFunction()) : self.getData();
@@ -419,8 +438,18 @@ insight.Grouping = (function(insight) {
             data.forEach(function(d) {
 
                 self.calculateAverages(d);
+                self.calculateCumulativeValues(d, cumulativeTotals);
+                self.calculateTotals(d, totals);
 
-                self.calculateCumulativeValues(d, totals);
+            });
+        };
+
+        this.calculateTotals = function(d, totals) {
+
+            var propertiesToTotal = self.total();
+
+            propertiesToTotal.map(function(propertyName) {
+
 
             });
         };
@@ -430,23 +459,23 @@ insight.Grouping = (function(insight) {
          * @param {object} data - The data group being added to the cumulative running totals list
          * @param {object} totals - The map object of running totals for the defined properties
          */
-        this.calculateCumulativeValues = function(d, totals) {
+        this.calculateCumulativeValues = function(d, cumulativeTotals) {
 
-            var cumulativeProperties = this.cumulative();
+            var propertiesToAccumulate = this.cumulative();
 
-            cumulativeProperties.map(function(propertyName) {
+            propertiesToAccumulate.map(function(propertyName) {
 
-                var desc = self.getDescendant(d.value, propertyName);
+                var resolvedProperty = self.getDescendant(d.value, propertyName);
 
-                var totalName = desc.propertyName + 'Cumulative';
+                var totalName = resolvedProperty.propertyName + 'Cumulative';
 
-                totals[totalName] = totals[totalName] ? totals[totalName] + desc.value : desc.value;
+                cumulativeTotals[totalName] = cumulativeTotals[totalName] ? cumulativeTotals[totalName] + resolvedProperty.value : resolvedProperty.value;
 
-                desc.container[totalName] = totals[totalName];
+                resolvedProperty.container[totalName] = cumulativeTotals[totalName];
 
             });
 
-            return totals;
+            return cumulativeTotals;
         };
 
         return this;

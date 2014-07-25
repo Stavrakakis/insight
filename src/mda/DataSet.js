@@ -78,11 +78,11 @@ insight.DataSet = (function(insight) {
     };
 
 
-    DataSet.prototype.group = function(name, groupFunction, multi) {
+    DataSet.prototype.group = function(name, groupFunction, oneToMany) {
 
         this.ndx = !this.ndx ? crossfilter(this._data) : this.ndx;
 
-        var dim = new insight.Dimension(name, groupFunction, this.ndx.dimension(groupFunction), groupFunction, multi);
+        var dim = new insight.Dimension(name, groupFunction, this.ndx.dimension(groupFunction), groupFunction, oneToMany);
 
         var group = new insight.Grouping(dim);
 

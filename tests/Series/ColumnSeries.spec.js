@@ -21,37 +21,49 @@ var dataset =
 {'Id':20,'Forename':'Frances','Surname':'Lawson','Country':'Northern Ireland','DisplayColour':'#e739c9','Age':14,'IQ':71}];
 
 
-
-
-var div = document.createElement('div');
-div.id  = 'test';
-
-var createChartElement = function(){
-     
-    document.body.appendChild(div);        
-};
-
-var removeChartElement = function(){
-    document.body.removeChild(div);
-};
-
-
 describe('Column Series Tests', function() {
     
-    it('filtering works with a single item', function() {
-        
-        insight.init();
+    var chartGroup,
+        chart,
+        data,
+        div = document.createElement('div');
+
+    div.id  = 'test';
+
+    var createChartElement = function(){
+         
+        document.body.appendChild(div);        
+    };
+
+    var removeChartElement = function(){
+        document.body.removeChild(div);
+    };
+
+    beforeEach(function() {
 
         createChartElement();
 
-        var data = new insight.DataSet(dataset);
+        chartGroup = new insight.ChartGroup();
+        data = new insight.DataSet(dataset);
+        chart = new insight.Chart('Chart 1', '#test');
+           
+    });
 
-        var chart = new insight.Chart('Chart 1', '#test');
-                
+    afterEach(function(){
+        removeChartElement();
+    });
+
+    it('filtering works with a single item', function() {
+        
+        chartGroup = new insight.ChartGroup();
+        data = new insight.DataSet(dataset);
+        chart = new insight.Chart('Chart 1', '#test');
+
         var group =  data.group('country',function(d){return d.Country;});
         
         var xScale = new insight.Axis('Country', insight.Scales.Ordinal);
         var yScale = new insight.Axis('Stuff', insight.Scales.Linear);
+        
         chart.addXAxis(xScale);
         chart.addYAxis(yScale);
 
@@ -59,19 +71,18 @@ describe('Column Series Tests', function() {
         
         var data = series.dataset();
 
-        insight.drawCharts();
+        chartGroup.addChart(chart);
 
         expect(data.length).toBe(1);
 
-        removeChartElement();
     });
 
     it('filtering works with multiple items', function() {
         
-        var data = new insight.DataSet(dataset);
-
-        var chart = new insight.Chart('Chart 1', '#chart1');
-                
+        chartGroup = new insight.ChartGroup();
+        data = new insight.DataSet(dataset);
+        chart = new insight.Chart('Chart 1', '#test');
+        
         var group =  data.group('country',function(d){return d.Country;});
 
         var xScale = new insight.Axis('Country', insight.Scales.Ordinal);
@@ -90,11 +101,7 @@ describe('Column Series Tests', function() {
 
 
     it('calculates max with normal series', function() {
-        
-        var data = new insight.DataSet(dataset);
-
-        var chart = new insight.Chart('Chart 1', '#chart1');
-                
+                        
         var group =  data.group('country',function(d){return d.Country;});
 
         var xScale = new insight.Axis('Country', insight.Scales.Ordinal);
@@ -111,11 +118,7 @@ describe('Column Series Tests', function() {
     });
 
     it('calculates max with grouped series', function() {
-        
-        var data = new insight.DataSet(dataset);
-
-        var chart = new insight.Chart('Chart 1', '#chart1');
-                
+                        
         var group =  data.group('country',function(d){return d.Country;}).mean(['Age']);
 
         var xScale = new insight.Axis('Country', insight.Scales.Ordinal);
@@ -153,10 +156,6 @@ describe('Column Series Tests', function() {
     });
 
     it('calculates max with a stacked series', function() {
-        
-        var data = new insight.DataSet(dataset);
-
-        var chart = new insight.Chart('Chart 1', '#chart1');
                 
         var group =  data.group('country',function(d){return d.Country;}).mean(['Age']);
 
@@ -197,10 +196,6 @@ describe('Column Series Tests', function() {
     it('ColumnSeries root css is correct', function() {
         
         //Given 
-
-        var data = new insight.DataSet(dataset);
-
-        var chart = new insight.Chart('Chart 1', '#chart1');
                 
         var group =  data.group('country', function(d){return d.Country;})
                          .mean(['Age']);
@@ -225,10 +220,6 @@ describe('Column Series Tests', function() {
     it('ColumnSeries item css is correct', function() {
         
         //Given 
-
-        var data = new insight.DataSet(dataset);
-
-        var chart = new insight.Chart('Chart 1', '#chart1');
                 
         var group =  data.group('country', function(d){return d.Country;})
                          .mean(['Age']);

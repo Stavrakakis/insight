@@ -88,7 +88,7 @@ describe('Grouping tests', function() {
         var data = group.getData();
         
         //filter age by people older than 10, to remove an entry from the scotland group
-        age.dimension.Dimension.filter(function(d){
+        age.dimension.crossfilterDimension.filter(function(d){
             return d > 10;
         });
 
@@ -216,7 +216,7 @@ describe('Grouping tests', function() {
         expect(scotland.value.Interests.Total).toBe(9);
 
         //filter age by people older than 10, to remove an entry from the scotland group and hopefully trigger a recalculation of the property counts
-        age.dimension.Dimension.filter(function(d){
+        age.dimension.crossfilterDimension.filter(function(d){
             return d > 10;
         });
 
@@ -249,7 +249,7 @@ describe('Grouping tests', function() {
         expect(ballet.value).toBe(1);
         expect(triathlon.value).toBe(11);        
 
-        age.dimension.Dimension.filter(function(d){ 
+        age.dimension.crossfilterDimension.filter(function(d){ 
             return d > 10; 
         });
 
@@ -288,7 +288,7 @@ describe('Grouping tests', function() {
             current = d.value;
         });
 
-        age.dimension.Dimension.filter(function(d){ 
+        age.dimension.crossfilterDimension.filter(function(d){ 
             return d > 10; 
         });
 

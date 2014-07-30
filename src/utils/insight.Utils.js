@@ -1,6 +1,6 @@
 /**
  * This module contains some helper functions used throughout the library
- * @module InsightUtils
+ * @namespace insight.Utils
  */
 insight.Utils = (function() {
 
@@ -11,6 +11,7 @@ insight.Utils = (function() {
     /**
      * This recursive function takes two values a and b, a list of sort objects [{sortFunction: function(a){return a.valueToSortOn;}, order: 'ASC'}] and an index of the current function being used to sort.
      * It returns a ordering value for a and b, as per the normal Javascript sorting rules https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     * @memberof! insight.Utils
      * @returns {int} sortResult - if a > b then the result = 1, -1 if a < b and 0 if a == b.
      * @param {object} a - Description
      * @param {object} b - Description
@@ -54,6 +55,29 @@ insight.Utils = (function() {
 
     exports.isNumber = function(obj) {
         return Object.prototype.toString.call(obj) === '[object Number]';
+    };
+
+    /**
+     * Returns true/false if an object is inside an array.
+     * @memberof! insight.Utils
+     * @param {object[]} array - The array to check
+     * @param {object} value - The value to check for
+     * @returns {boolean} - True if the provided array contains the provided value
+     */
+    exports.arrayContains = function(array, value) {
+        return array.indexOf(value) != -1;
+    };
+
+    /**
+     * Adds a value to an array, only if it doesn't already belong to the array.
+     * @memberof! insight.Utils
+     * @param {object[]} array - The array to insert into
+     * @param {object} value - The value to insert
+     */
+    exports.addToSet = function(array, value) {
+        if (!exports.arrayContains(array, value)) {
+            array.push(value);
+        }
     };
 
     /**

@@ -31,10 +31,6 @@ insight.Series = function Series(name, data, x, y, color) {
             y: -10
         };
 
-    if (data.register) {
-        data.register(this);
-    }
-
     // private functions used internally, set by functions below that are exposed on the object
 
     var keyFunction = function(d) {

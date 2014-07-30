@@ -16,13 +16,6 @@ insight.ScatterSeries = function ScatterSeries(name, data, x, y, color) {
         self = this,
         selector = this.name + insight.Constants.Scatter;
 
-    var xFunction = function(d) {
-        return d.x;
-    };
-
-    var yFunction = function(d) {
-        return d.y;
-    };
 
     this.findMax = function(scale) {
         var self = this;
@@ -93,8 +86,8 @@ insight.ScatterSeries = function ScatterSeries(name, data, x, y, color) {
         var max = d3.max(data, radiusFunction);
 
         //Minimum of pixels-per-axis-unit
-        var xValues = data.map(xFunction);
-        var yValues = data.map(yFunction);
+        var xValues = data.map(self.xFunction());
+        var yValues = data.map(self.yFunction());
         var xBounds = this.x.bounds[1];
         var yBounds = this.y.bounds[0];
 

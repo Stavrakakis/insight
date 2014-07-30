@@ -13,18 +13,20 @@ insight.Dimension = (function(insight) {
      * @class
      */
     var Dimension = function Dimension(name, func, dimension, displayFunction, oneToMany) {
-        this.Dimension = dimension;
-        this.Name = name;
-        this.Filters = [];
+        this.crossfilterDimension = dimension;
+        this.name = name;
+        this.filters = [];
         this.oneToMany = oneToMany;
+
+        var self = this;
 
         this.displayFunction = displayFunction ? displayFunction : function(d) {
             return d;
         };
 
         this.comparer = function(d) {
-            return d.Name == this.Name;
-        }.bind(this);
+            return d.name == self.name;
+        };
 
 
     };

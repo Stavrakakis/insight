@@ -4,6 +4,7 @@ module.exports = function(grunt) {
     'src/Insight.js', 
     'src/utils/*.js', 
     'src/mda/*.js', 
+    'src/charts/ChartGroup.js',
     'src/charts/Chart.js',
     'src/charts/Table.js',
     'src/charts/Tooltip.js',

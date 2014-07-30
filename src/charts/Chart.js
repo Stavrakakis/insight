@@ -39,6 +39,10 @@
             var title = '';
             var autoMargin = true;
 
+            this.seriesChanged = function(series) {
+
+            };
+
 
             this.init = function(create, container) {
 
@@ -281,6 +285,8 @@
                 }
                 series = newSeries;
 
+                self.seriesChanged(newSeries);
+
                 return this;
             };
 
@@ -480,8 +486,6 @@
 
                 notselected.classed('notselected', selected[0].length > 0);
             };
-
-            insight.addChart(this);
         }
 
 

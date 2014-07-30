@@ -2,7 +2,7 @@
  * A Grouping is generated on a dimension, to reduce the items in the data set into groups along the provided dimension
  * @class insight.Grouping
  * @constructor
- * @param {Dimension} dimension - The dimension to group
+ * @param {dimension} dimension - The dimension to group
  */
 insight.Grouping = (function(insight) {
 
@@ -254,7 +254,7 @@ insight.Grouping = (function(insight) {
          * For example: a property called supportedDevices : ['iPhone5', 'iPhone4'] where the values inside the array are treated as dimensional slices
          * @returns {object[]} return - the array of dimensional groupings resulting from this dimensional aggregation
          */
-        var reduceMultiDimension = function() {
+        var reduceMultidimension = function() {
 
             var propertiesToCount = self.count();
 
@@ -317,7 +317,7 @@ insight.Grouping = (function(insight) {
                 };
             }
 
-            data = self.dimension.Dimension.groupAll()
+            data = self.dimension.crossfilterDimension.groupAll()
                 .reduce(reduceAdd, reduceRemove, reduceInitial);
 
             self.orderFunction(function(a, b) {
@@ -330,21 +330,6 @@ insight.Grouping = (function(insight) {
 
         // Public methods
 
-        /** 
-         * This function is called by Series that use this Grouping, to wire up their click events to the filter event of this Grouping
-         * TODO - temporary, this needs to be removed from here (and series) and put into a new ChartGroup, ChartContainer or Dashboard type entity
-         * @param {insight.Series} series - The series registering with this Grouping
-         */
-        this.register = function(series) {
-            series.clickEvent = this.filterHandler;
-        };
-
-        /** 
-         * This handler is exposed by a Grouping and overriden by the global namespace when it wants to listen to this Grouping's filter events and wire them up to other Groupings and charts.
-         */
-        this.filterHandler = function(series, filter, dimensionSelector) {
-
-        };
 
         /**
          * Gets the function that will run after the map reduce stage of this Grouping's aggregation. This is an empty function by default, and can be overriden by the setter.
@@ -527,9 +512,14 @@ insight.Grouping = (function(insight) {
             var data;
 
             if (self.dimension.oneToMany) {
-                data = reduceMultiDimension();
+                // Dimensions that are one to many {supportedLanguages: ['EN', 'DE']} as opposed to {supportedLanguage: 'EN'} need to be aggregated differently
+                data = reduceMultidimension();
             } else {
-                data = self.dimension.Dimension.group()
+                // this is crossfilter code.  It calls the crossfilter.group().reduce() functions on the crossfilter dimension wrapped inside our insight.Dimension
+                // more info at https://github.com/square/crossfilter/wiki/API-Reference
+                // the add, remove and initialie functions are called when crossfilter is aggregating the groups, and is amending the membership of the different 
+                // dimensional slices (groups) 
+                data = self.dimension.crossfilterDimension.group()
                     .reduce(
                         reduceAddToGroup,
                         reduceRemoveFromGroup,

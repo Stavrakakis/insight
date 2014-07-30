@@ -104,7 +104,7 @@ insight.Series = function Series(name, data, x, y, color) {
      */
     this.itemClassName = function(dataItem, additionalClasses) {
 
-        var keySelector = insight.Utils.keySelector(dataItem);
+        var keySelector = insight.Utils.keySelector(dataItem, keyFunction);
         var selected = selectedClassName(self.selectedItems, keySelector);
         var value = self.rootClassName + ' ' + keySelector + selected;
 
@@ -190,11 +190,6 @@ insight.Series = function Series(name, data, x, y, color) {
             .map(self.keyFunction());
     };
 
-
-
-    this.keyAccessor = function(d) {
-        return d.key;
-    };
 
     this.xFunction = function(_) {
         if (!arguments.length) {

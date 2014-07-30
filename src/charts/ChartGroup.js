@@ -90,7 +90,7 @@
             var addDataSet = function(dataset) {
 
                 // If this is a crossfilter enabled DataSet (aggregated and filter enabled)
-                var crossfilterEnabled = dataset.data.dimension;
+                var crossfilterEnabled = dataset.dimension;
 
                 if (crossfilterEnabled) {
 
@@ -116,7 +116,7 @@
                         var alreadyListening = listeningObjects.indexOf(widget) != -1;
 
                         if (!alreadyListening) {
-                            listeningObjects.push(widget);
+                            self.dimensionListenerMap[dimension.name].push(widget);
                         }
                     } else {
                         self.dimensionListenerMap[dimension.name] = [widget];

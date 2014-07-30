@@ -204,7 +204,7 @@ insight.ColumnSeries = function ColumnSeries(name, data, x, y, color) {
 
         var groups = chart.plotArea
             .selectAll(groupSelector)
-            .data(data, self.keyAccessor);
+            .data(data, self.keyFunction());
 
         var newGroups = groups.enter()
             .append('g')

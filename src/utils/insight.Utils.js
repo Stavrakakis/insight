@@ -86,9 +86,10 @@ insight.Utils = (function() {
      * @returns {string} return - A class name to identify this point and any other points taking the same value in other charts.
      * @param {object} data - The input point
      */
-    exports.keySelector = function(d) {
+    exports.keySelector = function(d, keyFunction) {
 
-        var str = d.key.toString();
+        var str = keyFunction(d)
+            .toString();
 
         var result = "in_" + str.replace(/[^A-Z0-9]/ig, "_");
 

@@ -8,7 +8,9 @@ insight.Grouping = (function(insight) {
 
     function Grouping(dimension) {
 
-        this.dimension = dimension;
+
+
+        //private variables
 
         var sumProperties = [],
             countProperties = [],
@@ -18,6 +20,12 @@ insight.Grouping = (function(insight) {
             self = this,
             filterFunction = null,
             orderFunction;
+
+
+
+        //public variables
+
+        this.dimension = dimension;
 
         // Private methods
 

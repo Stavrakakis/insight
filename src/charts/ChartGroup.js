@@ -48,20 +48,25 @@
              * This function takes a list of series and binds the click events of each one to the ChartGroup filtering handler
              * It also adds the series' dataset to the internal list.
              */
-            var addSeries = function(seriesArray) {
-                seriesArray.forEach(function(series) {
-                    series.clickEvent = self.chartFilterHandler.bind(self);
-                    addDataSet(series.data);
-                });
+            var addSeries = function(chart) {
+                chart.series()
+                    .forEach(function(series) {
+
+                        addDimensionListener(series.data, chart);
+
+                        series.clickEvent = self.chartFilterHandler.bind(self);
+
+                        addDataSet(series.data);
+                    });
             };
 
             /* 
              * This function is called when a Chart belonging to this ChartGroup updates its list of Series.
              * The ChartGroup needs to register the click events and any crossfilter dimensions belonging to the Series
              */
-            var newSeries = function(series) {
+            var newSeries = function(chart, series) {
 
-                addSeries(series);
+                addSeries(chart, series);
             };
 
 
@@ -91,6 +96,8 @@
                 // wire up the click event of the table to the filter handler of the DataSet
                 table.clickEvent = self.chartFilterHandler.bind(self);
 
+                addDimensionListener(table.data, table);
+
                 self.tables.push(table);
 
                 return table;
@@ -106,7 +113,7 @@
 
                 chart.seriesChanged = newSeries;
 
-                addSeries(chart.series());
+                addSeries(chart);
 
                 self.charts.push(chart);
 
@@ -119,7 +126,7 @@
              * only if the provided DataSet is a crossfilter enabled one that exposes a dimension property.
              */
             var addDimensionListener = function(dataset, widget) {
-                var dimension = dataset.dimension;
+                var dimension = dataset ? dataset.dimension : null;
 
                 if (dimension) {
                     var listeningObjects = self.dimensionListenerMap[dimension.name];
@@ -138,22 +145,6 @@
             };
 
             // public methods
-
-            /**
-             * Redraws all Chart and Table objects contained by this ChartGroup
-             * @memberof! insight.ChartGroup
-             * @instance
-             */
-            this.redraw = function() {
-                self.charts.forEach(function(chart) {
-                    chart.draw();
-                });
-
-                self.tables.forEach(function(table) {
-                    table.draw();
-                });
-            };
-
 
 
             /**
@@ -180,19 +171,11 @@
              */
             this.draw = function() {
 
-                self.charts
-                    .forEach(
-                        function(chart) {
-                            chart.series()
-                                .forEach(function(series) {
-                                    addDimensionListener(series.data, chart);
-                                });
-
-                            chart.init();
-                        });
+                self.charts.forEach(function(chart) {
+                    chart.draw();
+                });
 
                 self.tables.forEach(function(table) {
-                    addDimensionListener(table.data, table);
                     table.draw();
                 });
             };
@@ -278,7 +261,7 @@
 
                     });
 
-                    self.redraw();
+                    self.draw();
                 }
             };
         }

@@ -30,6 +30,12 @@ D3Match.prototype.node = function() {
     return this;   
 };
 
+D3Match.prototype.select = function(el) {
+
+    return new D3Match(el);
+
+};
+
 var D3Mocks = function() {
     this.elements = {};
 }

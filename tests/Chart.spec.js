@@ -184,10 +184,11 @@ describe('Chart', function() {
                 d3 = new D3Mocks();
 
                 // prevent calling through to functions that are not being tested
-                spyOn(chart, 'draw');
-                spyOn(chart, 'addClipPath');
+                spyOn(chart, 'init').andCallThrough();
+                spyOn(chart, 'draw').andCallThrough();
+                spyOn(chart, 'addClipPath').andCallThrough();
 
-                chart.init();
+                chart.draw();
             };
 
             beforeEach(function(){
@@ -270,7 +271,7 @@ describe('Chart', function() {
 
                     testInit();
 
-                    expect(chart.draw).toHaveBeenCalledWith(false);
+                    expect(chart.draw).toHaveBeenCalledWith();
 
                 });
 

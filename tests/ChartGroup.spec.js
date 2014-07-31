@@ -218,7 +218,7 @@ describe('Chart Group Tests', function() {
         chart.series([series]);
 
         // spy on the initialization of the chart, to make sure it's called
-        spyOn(chart, 'init');
+        spyOn(chart, 'draw');
 
         // When
 
@@ -227,7 +227,7 @@ describe('Chart Group Tests', function() {
         chartGroup.draw();
 
         // Then
-        expect(chart.init).toHaveBeenCalled();
+        expect(chart.draw).toHaveBeenCalled();
 
     });
 
@@ -251,22 +251,21 @@ describe('Chart Group Tests', function() {
         chart.series([series]);
 
         // spy on the initialization of the chart, to make sure it's called
-        spyOn(chart, 'init');
+        
         spyOn(chart, 'draw');
 
         // When
 
         chartGroup.add(chart);
         chartGroup.draw();
-        
-        chartGroup.redraw();
+        chartGroup.draw();
 
         // Then
 
-        var expectedDrawCalls = 1;
+        var expectedDrawCalls = 2;
         var actualDrawCalls = chart.draw.calls.length;
         
-        expect(chart.init).toHaveBeenCalled();
+        expect(chart.draw).toHaveBeenCalled();
         expect(actualDrawCalls).toEqual(expectedDrawCalls);
 
     });
@@ -306,8 +305,8 @@ describe('Chart Group Tests', function() {
         chart2.series([series2]);
 
         // spy on the initialization of the chart, to make sure it's called
-        spyOn(chart, 'init');
-        spyOn(chart2, 'init');
+        spyOn(chart, 'draw');
+        spyOn(chart2, 'draw');
 
         // When
 
@@ -321,8 +320,8 @@ describe('Chart Group Tests', function() {
         var expectedDimensionMap = {'country': [chart, chart2]};        
         var actualDimensionMap = chartGroup.dimensionListenerMap;
 
-        expect(chart.init).toHaveBeenCalled();
-        expect(chart2.init).toHaveBeenCalled();
+        expect(chart.draw).toHaveBeenCalled();
+        expect(chart2.draw).toHaveBeenCalled();
         expect(actualDimensionMap).toEqual(expectedDimensionMap);
 
     });
@@ -352,7 +351,7 @@ describe('Chart Group Tests', function() {
 
 
         // spy on the initialization of the chart, to make sure it's called
-        spyOn(chart, 'init');
+        
         spyOn(chart, 'draw');
         spyOn(table, 'draw');
 
@@ -361,8 +360,7 @@ describe('Chart Group Tests', function() {
         chartGroup.add(chart);
         chartGroup.add(table);
         chartGroup.draw();
-        
-        chartGroup.redraw();        
+        chartGroup.draw();        
 
         // Then
 
@@ -373,7 +371,7 @@ describe('Chart Group Tests', function() {
 
         expect(actualDimensionMap).toEqual(expectedDimensionMap);
 
-        expect(chart.init).toHaveBeenCalled();
+        expect(chart.draw).toHaveBeenCalled();
         expect(table.draw).toHaveBeenCalled();
         expect(table.draw.calls.length).toEqual(expectedTableDrawCalls);
 
@@ -405,9 +403,8 @@ describe('Chart Group Tests', function() {
 
 
         // spy on the initialization of the chart, to make sure it's called
-        spyOn(chart, 'init');
         spyOn(chart, 'draw');
-        spyOn(chartGroup, 'redraw');
+        spyOn(chartGroup, 'draw');
         spyOn(table, 'draw');
         spyOn(countries, 'recalculate');
         spyOn(countries.dimension, 'createFilterFunction').andCallThrough();
@@ -435,7 +432,7 @@ describe('Chart Group Tests', function() {
         expect(countries.dimension.createFilterFunction).toHaveBeenCalled();
         expect(countries.recalculate).toHaveBeenCalled();
         expect(chart.highlight).toHaveBeenCalled();
-        expect(chartGroup.redraw).toHaveBeenCalled();
+        expect(chartGroup.draw).toHaveBeenCalled();
         expect(table.highlight).toHaveBeenCalled();
     });
 

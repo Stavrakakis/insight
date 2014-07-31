@@ -13,9 +13,6 @@
             this.name = name;
             this.element = element;
             this.selectedItems = [];
-            var legend = null;
-
-            var zoomAxis = null;
             this.container = null;
             this.chart = null;
             this.measureCanvas = document.createElement('canvas');
@@ -29,15 +26,19 @@
 
             this.legendView = null;
 
-            var height = d3.functor(300);
-            var width = d3.functor(300);
-            var zoomable = false;
-            var series = [];
-            var xAxes = [];
-            var yAxes = [];
-            var self = this;
-            var title = '';
-            var autoMargin = true;
+            var height = d3.functor(300),
+                width = d3.functor(300),
+                zoomable = false,
+                series = [],
+                xAxes = [],
+                yAxes = [],
+                self = this,
+                title = '',
+                autoMargin = true,
+                initialized = false,
+                legend = null,
+                zoomInitialized = false,
+                zoomAxis = null;
 
             this.seriesChanged = function(series) {
 
@@ -64,16 +65,16 @@
 
                 self.addClipPath();
 
-                self.draw(false);
-
-                if (zoomable) {
-                    self.initZoom();
-                }
-
+                initialized = true;
             };
 
 
             this.draw = function(dragging) {
+
+                if (!initialized) {
+                    self.init();
+                }
+
                 this.resizeChart();
 
                 var axes = xAxes.concat(yAxes);
@@ -89,6 +90,10 @@
 
                 if (legend !== null) {
                     legend.draw(self, self.series());
+                }
+
+                if (zoomable && !zoomInitialized) {
+                    self.initZoom();
                 }
             };
 
@@ -169,6 +174,8 @@
 
                 this.plotArea.select('.zoompane')
                     .call(this.zoom);
+
+                zoomInitialized = true;
             };
 
             this.zoomExists = function() {
@@ -285,7 +292,7 @@
                 }
                 series = newSeries;
 
-                self.seriesChanged(newSeries);
+                self.seriesChanged(self, newSeries);
 
                 return this;
             };

@@ -283,7 +283,7 @@ insight.Series = function Series(name, data, x, y, color) {
 
     this.click = function(element, filter) {
 
-        var selector = insight.Utils.keySelector(filter);
+        var selector = insight.Utils.keySelector(filter, keyFunction);
 
         this.clickEvent(this, filter, selector);
     };

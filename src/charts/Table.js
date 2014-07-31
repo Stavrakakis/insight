@@ -72,13 +72,13 @@
 
 
             var rowClass = function(dataPoint) {
-                return insight.Constants.TableRowClass + ' ' + insight.Utils.keySelector(dataPoint);
+                return insight.Constants.TableRowClass + ' ' + insight.Utils.keySelector(dataPoint, keyFunction);
             };
 
 
             var click = function(dataItem) {
 
-                var selector = insight.Utils.keySelector(dataItem);
+                var selector = insight.Utils.keySelector(dataItem, keyFunction);
 
                 self.clickEvent(self, dataItem, selector);
             };
@@ -100,14 +100,14 @@
              * The properties of the DataSet to use as columns.
              * @memberof! insight.Table
              * @instance
-             * @returns {object} - The current properties used as columns, of the form {'label':... , 'value':... }.
+             * @returns {object[]} - The current properties used as columns, of the form {'label':... , 'value':... }.
              *
              * @also
              *
              * Sets the properties of the DataSet to use as columns.
              * @memberof! insight.Table
              * @instance
-             * @param {object} columnProperties The new properties to use as columns, of the form {'label':... , 'value':... }.
+             * @param {object[]} columnProperties - The new properties to use as columns, of the form {'label':... , 'value':... }.
              * @returns {this}
              */
             this.columns = function(value) {
@@ -115,6 +115,29 @@
                     return columnProperties;
                 }
                 columnProperties = value;
+                return this;
+            };
+
+
+            /**
+             * The key function to use for this Table.
+             * @memberof! insight.Table
+             * @instance
+             * @returns {function} - The function to use as the key accessor for this Table
+             *
+             * @also
+             *
+             * Sets the properties of the DataSet to use as columns.
+             * @memberof! insight.Table
+             * @instance
+             * @param {function} keyFunc - The function to use as the key accessor for this Table
+             * @returns {this}
+             */
+            this.keyFunction = function(keyFunc) {
+                if (!arguments.length) {
+                    return keyFunction;
+                }
+                keyFunction = keyFunc;
                 return this;
             };
 

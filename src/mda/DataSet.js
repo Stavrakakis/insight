@@ -79,7 +79,7 @@ insight.DataSet = (function(insight) {
 
         this.ndx = this.ndx ? this.ndx : crossfilter(this.data);
 
-        var dim = new insight.Dimension(name, groupFunction, this.ndx.dimension(groupFunction), groupFunction, oneToMany);
+        var dim = new insight.Dimension(name, this.ndx, groupFunction, oneToMany);
 
         var group = new insight.Grouping(dim);
 

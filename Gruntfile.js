@@ -3,6 +3,7 @@ module.exports = function(grunt) {
     'src/insight-dependencies.js', 
     'src/Insight.js', 
     'src/utils/*.js', 
+    'src/tests/**/*.js',
     'src/mda/*.js', 
     'src/charts/ChartGroup.js',
     'src/charts/Chart.js',

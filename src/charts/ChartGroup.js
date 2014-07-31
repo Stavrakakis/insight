@@ -21,25 +21,6 @@
 
             // private methods
 
-            /*
-             * Local helper function that creates a filter object given an element that has been clicked on a Chart or Table.
-             * The filter object creates the function used by crossfilter to remove or add objects to an aggregation after a filter event.
-             * It also includes a simple name variable to use for lookups
-             */
-            var createFilterFunction = function(filter) {
-                var value = filter.key ? filter.key : filter;
-
-                return {
-                    name: value,
-                    filterFunction: function(d) {
-                        if (Array.isArray(d)) {
-                            return d.indexOf(value) != -1;
-                        } else {
-                            return String(d) == String(value);
-                        }
-                    }
-                };
-            };
 
             /*
              * A helper functions used by Array.filter on an array of Dimension objects, to return any Dimensions in the list whose name matches the provided filter function.
@@ -55,8 +36,8 @@
              * This internal function responds to click events on Series and Tables, alerting any other elements using the same Dimension that they need to
              * update to highlight the selected slices of the Dimension
              */
-            var applyCSSClasses = function(item, value, dimensionSelector) {
-                var listeningObjects = self.dimensionListenerMap[item.data.dimension.name];
+            var notifyListeners = function(dimensionName, value, dimensionSelector) {
+                var listeningObjects = self.dimensionListenerMap[dimensionName];
 
                 listeningObjects.forEach(function(item) {
                     item.highlight(dimensionSelector, value);
@@ -85,7 +66,7 @@
 
 
             /* 
-             *
+             * This function checks if the provided DataSet is crossfilter enabled, and if so, adds its components to internal lists of Groupings and Dimensions.
              */
             var addDataSet = function(dataset) {
 
@@ -98,6 +79,38 @@
                     insight.Utils.addToSet(self.groupings, dataset);
                     insight.Utils.addToSet(self.dimensions, dataset.dimension);
                 }
+            };
+
+            /*
+             * Adds a Table to this ChartGroup, wiring up the Table's events to any related Charts or Tables in the ChartGroup
+             * @memberof! insight.ChartGroup
+             * @instance
+             */
+            var addTable = function(table) {
+
+                // wire up the click event of the table to the filter handler of the DataSet
+                table.clickEvent = self.chartFilterHandler.bind(self);
+
+                self.tables.push(table);
+
+                return table;
+            };
+
+
+            /*
+             * Adds a Chart to this ChartGroup, wiring up the click events of each Series to the filter handler
+             * @memberof! insight.ChartGroup
+             * @instance
+             */
+            var addChart = function(chart) {
+
+                chart.seriesChanged = newSeries;
+
+                addSeries(chart.series());
+
+                self.charts.push(chart);
+
+                return chart;
             };
 
 
@@ -142,40 +155,22 @@
             };
 
 
-            /**
-             * Adds a Table to this ChartGroup, wiring up the Table's events to any related Charts or Tables in the ChartGroup
-             * @memberof! insight.ChartGroup
-             * @instance
-             */
-            this.addTable = function(table) {
-
-                // wire up the click event of the table to the filter handler of the DataSet
-                table.clickEvent = self.chartFilterHandler.bind(self);
-
-                self.tables.push(table);
-
-                return table;
-            };
-
-
-
 
             /**
-             * Adds a Chart to this ChartGroup, wiring up the click events of each Series to the filter handler
+             * Adds an item to this ChartGroup, calling the appropriate internal addChart or addTable function depending on the type.
              * @memberof! insight.ChartGroup
              * @instance
+             * @param {object} widget - An insight.Table or insight.Chart
+             * @returns {this}
              */
-            this.addChart = function(chart) {
-
-                chart.seriesChanged = newSeries;
-
-                addSeries(chart.series());
-
-                self.charts.push(chart);
-
-                return chart;
+            this.add = function(widget) {
+                if (widget instanceof insight.Chart) {
+                    addChart(widget);
+                } else if (widget instanceof insight.Table) {
+                    addTable(widget);
+                }
+                return self;
             };
-
 
             /**
              * Draws all Charts and Tables in this ChartGroup
@@ -202,27 +197,43 @@
                 });
             };
 
-            this.chartFilterHandler = function(chart, value, dimensionSelector) {
+            /**
+             * Method handler that is bound by the ChartGroup to the click events of any chart series or table rows, if the DataSets used by those entities
+             * are crossfilter enabled.
+             * It notifies any other listening charts of the dimensional selection event, which they can respond to by applying CSS highlighting etc.
+             * @memberof! insight.ChartGroup
+             * @instance
+             * @param {object} caller - The insight.Table or insight.Chart initiating the click event.
+             * @param {object} value - The data item that the dimension is being sliced/filtered by. If it is an aggregation, it will be an object {key:, value:}, otherwise a string.
+             * @param {object} widget - An insight.Table or insight.Chart
+             * @returns {this}
+             */
+            this.chartFilterHandler = function(caller, value, dimensionSelector) {
 
-                applyCSSClasses(chart, value, dimensionSelector);
+                // send events to any charts or tables also using this dimension, as they will need to update their styles to reflect the selection
+                notifyListeners(caller.data.dimension.name, value, dimensionSelector);
 
-                var dimension = chart.data.dimension;
+                var dimension = caller.data.dimension;
 
-                var filterFunc = createFilterFunction(value);
+                var filterFunc = dimension.createFilterFunction(value);
 
                 if (filterFunc) {
+                    // get the list of any dimensions matching the one that is being filtered
                     var dims = self.dimensions
                         .filter(dimension.comparer);
 
+                    // get the list of matching dimensions that are already filtered
                     var activeDim = self.filteredDimensions
                         .filter(dimension.comparer);
 
+                    // add the new filter to the list of active filters if it's not already active
                     if (!activeDim.length) {
                         self.filteredDimensions.push(dimension);
                     }
 
                     var comparerFunction = compareFilters(filterFunc);
 
+                    // loop through the matching dimensions to filter them all
                     dims.map(function(dim) {
 
                         var filterExists = dim.filters

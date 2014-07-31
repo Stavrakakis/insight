@@ -42,7 +42,7 @@ describe('Legend', function() {
 
         lineSeries = new insight.LineSeries('line', data, x, y);
 
-        chartGroup.addChart(chart);
+        chartGroup.add(chart);
 
         chartGroup.draw();
         removeChartElement();

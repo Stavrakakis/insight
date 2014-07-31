@@ -13,7 +13,7 @@ insight.ColumnSeries = function ColumnSeries(name, data, x, y, color) {
 
     var self = this,
         stacked = d3.functor(false),
-        seriesName = "",
+        seriesName = '',
         seriesFunctions = {},
         barWidthFunction = this.x.rangeType;
 

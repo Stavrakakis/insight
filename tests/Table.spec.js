@@ -34,14 +34,14 @@ describe('Table Tests', function() {
 
         table = new insight.Table('Test Table', '#table', dataset);
         
-        group.addTable(table);
+        group.add(table);
     })
 
 
     it('returns normal dataset with no sorters', function() {
 
         // When
-        group.addTable(group);
+        group.add(group);
 
         // Then
 

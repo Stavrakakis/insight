@@ -71,7 +71,7 @@ describe('Column Series Tests', function() {
         
         var data = series.dataset();
 
-        chartGroup.addChart(chart);
+        chartGroup.add(chart);
 
         expect(data.length).toBe(1);
 

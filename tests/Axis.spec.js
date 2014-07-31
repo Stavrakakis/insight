@@ -477,7 +477,7 @@ describe('Axis Tests', function() {
             var lineSeries = new insight.LineSeries('line', data, x, y);
             chart.series([lineSeries]);
 
-            chartGroup.addChart(chart);
+            chartGroup.add(chart);
 
             chartGroup.draw();
             
@@ -523,7 +523,7 @@ describe('Axis Tests', function() {
             var lineSeries = new insight.LineSeries('line', data, x, y);
             chart.series([lineSeries]);
 
-            chartGroup.addChart(chart);
+            chartGroup.add(chart);
             chartGroup.draw();
 
             removeChartElement();
